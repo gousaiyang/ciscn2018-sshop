@@ -24,5 +24,6 @@ handlers = [
     (r'/register', RegisterHandler),
 
     (r'/debugggg', DebugHandler),
+    (r'/9adeb9ab5c8607df825eb98222b030f9', SourceHandler),
     (r'/bio', BioHandler)
 ]

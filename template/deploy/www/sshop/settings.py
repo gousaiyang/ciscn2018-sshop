@@ -6,4 +6,4 @@ email = 'i@qvq.im'
 debug = True
 
 connect_str = 'sqlite:///%s' % os.path.join(os.getcwd(), 'sshop.db3')
-cookie_secret = 'JDIOtOQQjLXklJT/N4aJE.tmYZ.IoK9M0_IHZW448b6exe7p1pysO'
+cookie_secret = '5f55e8c1487401007e1b56211abd85de5fe57f9fc0079e5060e981f025d2'

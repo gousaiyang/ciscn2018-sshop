@@ -8,7 +8,7 @@ import tornado.web
 from sshop.base import BaseHandler
 
 class DebugHandler(BaseHandler):
-    def get(self):
+    def get(self, *args, **kw):
         info = self.get_argument('info', '')
 
         if info == 'data':
@@ -24,3 +24,10 @@ class DebugHandler(BaseHandler):
             return self.write(data)
         else:
             return self.render('debug.html')
+
+class SourceHandler(BaseHandler):
+    def get(self, *args, **kw):
+        with open('9adeb9ab5c8607df825eb98222b030f9.zip', 'rb') as f:
+            self.write(f.read())
+
+        self.set_header('Content-Type', 'application/octet-stream')
