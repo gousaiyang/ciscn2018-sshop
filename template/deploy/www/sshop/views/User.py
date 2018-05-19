@@ -100,7 +100,7 @@ class UserInfoHandler(BaseHandler):
         isvip = self.get_secure_cookie('isvip') != '0'
 
         try:
-            with open('userbio/' + user.id + '.html') as f:
+            with open('userbio/' + str(user.id) + '.html') as f:
                 bio = f.read()
         except:
             bio = ''
@@ -112,7 +112,7 @@ class UserInfoHandler(BaseHandler):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
         bio = self.get_argument('bio', '')
 
-        with open('userbio/' + user.id + '.html', 'w') as f:
+        with open('userbio/' + str(user.id) + '.html', 'w') as f:
             f.write(bio)
 
         return self.render('user.html', success=1)
