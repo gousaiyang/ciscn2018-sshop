@@ -8,8 +8,8 @@ import bcrypt
 import os
 
 string_blacklist = ('{{', "'", '<', '>', 'script', 'object', 'onerror', 'onload',
-    'select', 'from', 'where', 'union', 'os', 'sys', 'open', 'cat', 'read', 'ls',
-    'timeit', 'subprocess', 'import', 'print', 'curl', 'nc', 'sh', 'proc',
+    'select', 'from', 'where', 'union', 'os', 'sys', 'open',
+    'timeit', 'subprocess', 'import', 'print', 'curl', 'proc',
     'builtin', 'eval', 'exec', 'input', 'pickle', 'reload')
 
 class UserLoginHanlder(BaseHandler):
