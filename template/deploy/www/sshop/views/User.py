@@ -107,7 +107,9 @@ class UserInfoHandler(BaseHandler):
 
         return self.render('user.html', user=user, isvip=isvip, bio=bio)
 
+    @tornado.web.authenticated
     def post(self, *args, **kwargs):
+        user = self.orm.query(User).filter(User.username == self.current_user).one()
         bio = self.get_argument('bio', '')
 
         with open('userbio/' + user.id + '.html', 'w') as f:
