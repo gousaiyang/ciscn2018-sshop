@@ -5,5 +5,18 @@
     <h1 class="user-username">{{ user.username }}</h1>
     <h3 class="user-email">邮箱地址：{{ user.mail }}</h3>
     <h3 class="user-integral">剩余积分：{{ user.integral }}</h3>
+
+    {% if user.isvip %}
+        <form action="">
+            <textarea name="bio" placeholder="在此处编辑您的个性资料"></textarea>
+            <button class="btn btn-primary" type="submit">修改个性资料</button>
+            <a>查看个性资料</a> {{ bio }}
+        </form>
+    {% else %}
+        <div class="alert alert-warning">
+            您还不是 VIP 用户，成为 VIP 用户即可编辑您的个性资料！
+        </div>
+    {% end %}
+
 </div>
 {% end %}

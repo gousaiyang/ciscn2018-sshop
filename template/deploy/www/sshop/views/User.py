@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import tornado.web
 from sqlalchemy.orm.exc import NoResultFound
 from sshop.base import BaseHandler
@@ -94,8 +96,22 @@ class UserInfoHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
-        return self.render('user.html', user=user)
 
+        try:
+            with open('userbio/' + user.id + '.html') as f:
+                bio = f.read()
+        except:
+            bio = ''
+
+        return self.render('user.html', user=user, bio=bio)
+
+    def post(self, *args, **kwargs):
+        bio = self.get_argument('bio', '')
+
+        with open('userbio/' + user.id + '.html', 'w') as f:
+            f.write(bio)
+
+        return self.render('user.html', success=1)
 
 class UserLogoutHandler(BaseHandler):
     @tornado.web.authenticated
