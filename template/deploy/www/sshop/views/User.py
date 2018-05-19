@@ -7,7 +7,7 @@ from sshop.models import User
 import bcrypt
 import os
 
-string_blacklist = ('{{', "'", '<', '>', 'script', 'object', 'onerror', 'onload',
+string_blacklist = ('{{', "'", 'script', 'object', 'onerror', 'onload',
     'select', 'from', 'where', 'union', 'os', 'sys', 'open', 'include', 'extend', 'module',
     'timeit', 'subprocess', 'import', 'print', 'curl', 'proc',
     'builtin', 'eval', 'exec', 'input', 'pickle', 'reload')
