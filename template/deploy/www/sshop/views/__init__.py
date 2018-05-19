@@ -1,6 +1,7 @@
 from Shop import *
 from User import *
 from Captcha import *
+from Debug import *
 
 handlers = [
 
@@ -20,5 +21,7 @@ handlers = [
 
     (r'/login', UserLoginHanlder),
     (r'/logout', UserLogoutHandler),
-    (r'/register', RegisterHandler)
+    (r'/register', RegisterHandler),
+
+    (r'/debugggg', DebugHandler)
 ]

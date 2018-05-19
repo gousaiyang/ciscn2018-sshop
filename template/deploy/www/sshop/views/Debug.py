@@ -1,0 +1,26 @@
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import subprocess
+
+import tornado.web
+from sshop.base import BaseHandler
+
+class DebugHandler(BaseHandler):
+    def get(self):
+        info = self.get_argument('info', '')
+
+        if info == 'data':
+            data = ''
+            data += '系统测试信息\n\nTODO：在生产环境部署的时候删掉\n\n'
+            data += '系统信息：\n' + subprocess.check_output('uname -a', shell=True) + '\n\n'
+            data += 'Python 信息：\n' + str(sys.version_info) + '\n\n'
+            data += '工作目录：\n' + os.getcwd() + '\n\n'
+
+            with open('./sshop/settings.py') as f:
+                data += '<!-- ' + '配置信息：\n' + f.read() + ' -->'
+
+            return self.write(data)
+        else:
+            return self.render('debug.html')

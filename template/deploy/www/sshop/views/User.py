@@ -52,7 +52,7 @@ class RegisterHandler(BaseHandler):
                 self.orm.commit()
                 try:
                     inviteUser = self.orm.query(User).filter(User.username == invite_user).one()
-                    inviteUser.integral += 10
+                    inviteUser.integral += 0.1
                     self.orm.commit()
                 except NoResultFound:
                     pass

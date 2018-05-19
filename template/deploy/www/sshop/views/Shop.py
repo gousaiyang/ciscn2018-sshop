@@ -59,6 +59,7 @@ class ShopCarHandler(BaseHandler):
         try:
             price = self.get_argument('price')
             user = self.orm.query(User).filter(User.username == self.current_user).one()
+            assert float(price) > 0
             res = user.pay(float(price))
             if res:
                 user.integral = res
