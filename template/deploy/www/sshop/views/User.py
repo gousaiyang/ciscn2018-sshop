@@ -7,8 +7,8 @@ from sshop.models import User
 import bcrypt
 import os
 
-string_blacklist = ('{{', "'", '<', '>', 'script', 'object', 'onerror', 'onload',
-    'select', 'from', 'where', 'union', 'os', 'sys', 'open',
+string_blacklist = ('{{', "'", 'script', 'object', 'onerror', 'onload',
+    'select', 'from', 'where', 'union', 'os', 'sys', 'open', 'include', 'extend', 'module',
     'timeit', 'subprocess', 'import', 'print', 'curl', 'proc',
     'builtin', 'eval', 'exec', 'input', 'pickle', 'reload')
 
@@ -111,6 +111,9 @@ class UserInfoHandler(BaseHandler):
         isvip = self.get_secure_cookie('isvip') != '0'
         bio = self.get_argument('bio', '')
 
+        if not isvip:
+            return self.render('user.html', danger=1, user=user, isvip=isvip)
+
         if any(b in bio.lower() for b in string_blacklist):
             return self.render('user.html', danger=1, user=user, isvip=isvip)
 
@@ -126,6 +129,11 @@ class BioHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
+        isvip = self.get_secure_cookie('isvip') != '0'
+
+        if not isvip:
+            self.redirect('/user')
+
         try:
             return self.render('../../userbio/' + str(user.id) + '.html')
         except:
