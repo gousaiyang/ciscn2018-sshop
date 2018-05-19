@@ -5,7 +5,7 @@ import random
 from datetime import date
 
 from sqlalchemy import Column
-from sqlalchemy.dialects.sqlite import FLOAT, VARCHAR, INTEGER
+from sqlalchemy.dialects.sqlite import FLOAT, VARCHAR, INTEGER, BOOLEAN
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
@@ -40,6 +40,7 @@ class User(BaseModel):
     username = Column(VARCHAR(50))
     mail = Column(VARCHAR(50))
     password = Column(VARCHAR(60))
+    isvip = Column(BOOLEAN, default=False)
     integral = Column(FLOAT, default=1000)
 
     def check(self, password):
