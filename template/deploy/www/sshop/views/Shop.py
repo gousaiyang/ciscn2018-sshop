@@ -37,6 +37,7 @@ class ShopPayHandler(BaseHandler):
         try:
             price = self.get_argument('price')
             user = self.orm.query(User).filter(User.username == self.current_user).one()
+            assert float(price) > 0
             user.integral = user.pay(float(price))
             self.orm.commit()
             return self.render('pay.html', success=1)
