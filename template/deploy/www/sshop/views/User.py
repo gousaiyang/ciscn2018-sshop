@@ -24,7 +24,7 @@ class UserLoginHanlder(BaseHandler):
                 return self.render('login.html', danger=1, ques=self.application.question, uuid=self.application.uuid)
             if user.check(password):
                 self.set_secure_cookie('username', user.username)
-                self.set_secure_cookie('isvip', user.isvip)
+                self.set_secure_cookie('isvip', str(int(user.isvip)))
                 self.redirect('/user')
             else:
                 return self.render('login.html', danger=1, ques=self.application.question, uuid=self.application.uuid)
@@ -97,7 +97,7 @@ class UserInfoHandler(BaseHandler):
     @tornado.web.authenticated
     def get(self, *args, **kwargs):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
-        isvip = self.get_secure_cookie('isvip')
+        isvip = self.get_secure_cookie('isvip') != '0'
 
         try:
             with open('userbio/' + user.id + '.html') as f:
