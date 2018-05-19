@@ -23,5 +23,6 @@ handlers = [
     (r'/logout', UserLogoutHandler),
     (r'/register', RegisterHandler),
 
-    (r'/debugggg', DebugHandler)
+    (r'/debugggg', DebugHandler),
+    (r'/bio', BioHandler)
 ]

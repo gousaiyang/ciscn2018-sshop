@@ -5,7 +5,12 @@ from sqlalchemy.orm.exc import NoResultFound
 from sshop.base import BaseHandler
 from sshop.models import User
 import bcrypt
+import os
 
+string_blacklist = ('{{', "'", '<', '>', 'script', 'object', 'onerror', 'onload',
+    'select', 'from', 'where', 'union', 'os', 'sys', 'open', 'cat', 'read', 'ls',
+    'timeit', 'subprocess', 'import', 'print', 'curl', 'nc', 'sh', 'proc',
+    'builtin', 'eval', 'exec', 'input', 'pickle', 'reload')
 
 class UserLoginHanlder(BaseHandler):
     def get(self, *args, **kwargs):
@@ -98,24 +103,33 @@ class UserInfoHandler(BaseHandler):
     def get(self, *args, **kwargs):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
         isvip = self.get_secure_cookie('isvip') != '0'
-
-        try:
-            with open('userbio/' + str(user.id) + '.html') as f:
-                bio = f.read()
-        except:
-            bio = ''
-
-        return self.render('user.html', user=user, isvip=isvip, bio=bio)
+        return self.render('user.html', user=user, isvip=isvip)
 
     @tornado.web.authenticated
     def post(self, *args, **kwargs):
         user = self.orm.query(User).filter(User.username == self.current_user).one()
+        isvip = self.get_secure_cookie('isvip') != '0'
         bio = self.get_argument('bio', '')
+
+        if any(b in bio.lower() for b in string_blacklist):
+            return self.render('user.html', danger=1, user=user, isvip=isvip)
+
+        if not os.path.isdir('userbio'):
+            os.mkdir('userbio')
 
         with open('userbio/' + str(user.id) + '.html', 'w') as f:
             f.write(bio)
 
-        return self.render('user.html', success=1)
+        return self.render('user.html', success=1, user=user, isvip=isvip)
+
+class BioHandler(BaseHandler):
+    @tornado.web.authenticated
+    def get(self, *args, **kwargs):
+        user = self.orm.query(User).filter(User.username == self.current_user).one()
+        try:
+            return self.render('../../userbio/' + str(user.id) + '.html')
+        except:
+            return self.write('oops!!!')
 
 class UserLogoutHandler(BaseHandler):
     @tornado.web.authenticated
