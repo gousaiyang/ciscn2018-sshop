@@ -8,7 +8,6 @@ import re
 
 '''
 route list
-
 login:      /login
 register:   /register
 logout:     /logout
@@ -94,6 +93,7 @@ class WebChecker:
         return True
 
     def register_test(self, invite = ''):
+        self.username = self._generate_randstr(8)
         rs = self.session.get(self.url + 'register')
         html = rs.text
         token = self._get_token(html)
@@ -287,6 +287,61 @@ class WebChecker:
         print '[-] Shopcar Add Failed'
         return False
 
+    def write_bio_test(self):
+        s = req.session()
+        rs = s.get(self.url + 'login')
+        html = rs.text
+        token = self._get_token(html)
+        x,y = self._get_answer(html)
+        rs = s.post(url=self.url + 'login', data={
+            self.csrfname: token,
+            "username": "admin",
+            "password": "adac74fdf8b017179959291fbf2eacef",
+            "captcha_x": x,
+            "captcha_y": y
+        })
+
+        rs = s.get(self.url + 'user')
+        html = rs.text
+
+        token = self._get_token(html)
+        rs = s.post(self.url + "user", data={
+            csrfname: token,
+            "bio": "Too Young Too Simple"
+        })
+
+        dom = PQ(rs.text)
+        success = dom("div.alert.alert-success")
+        success = PQ(success).text().strip()
+        if len(success):
+            print "[+] Write Bio Success"
+            return True
+        print "[-] Write Bio Failed"
+        return False
+
+    def read_bio_test(self):
+        s = req.session()
+        rs = s.get(self.url + 'login')
+        html = rs.text
+        token = self._get_token(html)
+        x,y = self._get_answer(html)
+        rs = s.post(url=self.url + 'login', data={
+            self.csrfname: token,
+            "username": "admin",
+            "password": "adac74fdf8b017179959291fbf2eacef",
+            "captcha_x": x,
+            "captcha_y": y
+        })
+        rs = s.get(self.url + 'bio')
+        flag = rs.text
+        flag = flag.strip()
+
+        if flag == "Too Young Too Simple":
+            print "[+] Read Bio Success"
+            return True
+
+        print "[-] Read Bio Success"
+        return False
 
 def checker(ip, port, csrfname):
     try:
@@ -301,6 +356,8 @@ def checker(ip, port, csrfname):
         check.second_kill_test()
         check.shopcar_add_test()
         check.shopcar_pay_test()
+        check.write_bio_test()
+        check.read_bio_test() 
         print '[-] Done'
     except Exception as ex:
         return '[!] Error, Unknown Exception,' + str(ex)
