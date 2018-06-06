@@ -23,8 +23,9 @@ shop car add: /shopcar/add
 captcha:    /captcha
 '''
 
+
 class WebChecker:
-    def __init__(self, ip, port, csrfname = '_xsrf'):
+    def __init__(self, ip, port, csrfname='_xsrf'):
         self.ip = ip
         self.port = port
         self.url = 'http://%s:%s/' % (ip, port)
@@ -36,7 +37,7 @@ class WebChecker:
         self.integral = None
         self.session = req.session()
 
-    def _generate_randstr(self, len = 10):
+    def _generate_randstr(self, len=10):
         return ''.join(random.sample(string.ascii_letters, len))
 
     def _get_uuid(self, html):
@@ -53,13 +54,13 @@ class WebChecker:
                     answer[ans[0].strip()] = ans[1].strip()
         x = random.randint(int(float(answer['ans_pos_x_1'])), int(float(answer['ans_width_x_1']) + float(answer['ans_pos_x_1'])))
         y = random.randint(int(float(answer['ans_pos_y_1'])), int(float(answer['ans_height_y_1']) + float(answer['ans_pos_y_1'])))
-        return x,y
+        return x, y
 
     def _get_user_integral(self):
         res = self.session.get(self.url + 'user')
         dom = PQ(res.text)
         res = dom('div.user-info').text()
-        integral = re.search('(\d+\.\d+)', res).group()
+        integral = re.search(r'(\d+\.\d+)', res).group()
         return integral
 
     def _get_token(self, html):
@@ -72,7 +73,7 @@ class WebChecker:
         rs = self.session.get(self.url + 'login')
         html = rs.text
         token = self._get_token(html)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         rs = self.session.post(url=self.url + 'login', data={
             self.csrfname: token,
             "username": self.username,
@@ -92,12 +93,12 @@ class WebChecker:
         print "[+] Login Success."
         return True
 
-    def register_test(self, invite = ''):
+    def register_test(self, invite=''):
         self.username = self._generate_randstr(8)
         rs = self.session.get(self.url + 'register')
         html = rs.text
         token = self._get_token(html)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         rs = self.session.post(url=self.url + 'register', data={
             self.csrfname: token,
             "username": self.username,
@@ -127,7 +128,7 @@ class WebChecker:
         html = res.text
         token = self._get_token(html)
         password = self._generate_randstr(10)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         res = iv.post(url=self.url + 'register', data={
             self.csrfname: token,
             "username": self._generate_randstr(6),
@@ -162,7 +163,7 @@ class WebChecker:
             rs = newPass.get(self.url + 'login')
             html = rs.text
             new_token = self._get_token(html)
-            x,y = self._get_answer(html)
+            x, y = self._get_answer(html)
             rs = newPass.post(url=self.url + 'login', data={
                 self.csrfname: new_token,
                 "username": self.username,
@@ -180,7 +181,7 @@ class WebChecker:
             except:
                 pass
             print '[+] Change Password Success'
-            self.session = newPass;
+            self.session = newPass
             return True
         print '[-] Change Password Failed'
         return False
@@ -189,7 +190,7 @@ class WebChecker:
         res = self.session.get(self.url + 'pass/reset')
         html = res.text
         token = self._get_token(html)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         rs = self.session.post(self.url + 'pass/reset', data={
             self.csrfname: token,
             'mail': self.mail,
@@ -235,8 +236,8 @@ class WebChecker:
         res = self.session.get(self.url + 'info/%s' % str(id))
         dom = PQ(res.text)
         res = dom('div.commodity-info').text()
-        text = re.search('Amount: (\d+)', res).group()
-        return re.search('(\d+)', text).group()
+        text = re.search(r'Amount: (\d+)', res).group()
+        return re.search(r'(\d+)', text).group()
 
     def second_kill_test(self):
         amount = self._get_amount('2')
@@ -260,7 +261,7 @@ class WebChecker:
         token = self._get_token(rs.text)
         rs = self.session.post(self.url + 'shopcar', data={
             self.csrfname: token,
-            'price': float(random.randint(1,50))
+            'price': float(random.randint(1, 50))
         })
         new_integral = self._get_user_integral()
         if float(new_integral) < float(integral):
@@ -292,7 +293,7 @@ class WebChecker:
         rs = s.get(self.url + 'login')
         html = rs.text
         token = self._get_token(html)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         rs = s.post(url=self.url + 'login', data={
             self.csrfname: token,
             "username": "admin",
@@ -324,7 +325,7 @@ class WebChecker:
         rs = s.get(self.url + 'login')
         html = rs.text
         token = self._get_token(html)
-        x,y = self._get_answer(html)
+        x, y = self._get_answer(html)
         rs = s.post(url=self.url + 'login', data={
             self.csrfname: token,
             "username": "admin",
@@ -343,6 +344,7 @@ class WebChecker:
         print "[-] Read Bio Success"
         return False
 
+
 def checker(ip, port, csrfname):
     try:
         check = WebChecker(str(ip), str(port), csrfname)
@@ -357,10 +359,11 @@ def checker(ip, port, csrfname):
         check.shopcar_add_test()
         check.shopcar_pay_test()
         check.write_bio_test()
-        check.read_bio_test() 
+        check.read_bio_test()
         print '[-] Done'
     except Exception as ex:
         return '[!] Error, Unknown Exception,' + str(ex)
+
 
 if __name__ == '__main__':
     if len(sys.argv) != 4:
