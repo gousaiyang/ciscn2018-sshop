@@ -60,7 +60,7 @@ class WebChecker:
         res = self.session.get(self.url + 'user')
         dom = PQ(res.text)
         res = dom('div.user-info').text()
-        integral = re.search(r'(-?\d+\.\d+)', res).group()
+        integral = re.search(r'(-?\d+(?:\.\d+)?)', res).group()
         return integral
 
     def _get_token(self, html):
@@ -236,8 +236,7 @@ class WebChecker:
         res = self.session.get(self.url + 'info/%s' % str(id))
         dom = PQ(res.text)
         res = dom('div.commodity-info').text()
-        text = re.search(r'Amount: (-?\d+)', res).group()
-        return re.search(r'(\d+)', text).group()
+        return re.search(r'Amount: (-?\d+)', res).group()
 
     def second_kill_test(self):
         amount = self._get_amount('2')
