@@ -60,8 +60,7 @@ class WebChecker:
         res = self.session.get(self.url + 'user')
         dom = PQ(res.text)
         res = dom('div.user-info').text()
-        integral = re.search(r'(-?\d+(?:\.\d+)?)', res).group()
-        return integral
+        return re.findall(r'(-?\d+(?:\.\d+)?)', res)[0]
 
     def _get_token(self, html):
         dom = PQ(html)
@@ -236,7 +235,7 @@ class WebChecker:
         res = self.session.get(self.url + 'info/%s' % str(id))
         dom = PQ(res.text)
         res = dom('div.commodity-info').text()
-        return re.search(r'Amount: (-?\d+)', res).group()
+        return re.findall(r'Amount: (-?\d+)', res)[0]
 
     def second_kill_test(self):
         amount = self._get_amount('2')
@@ -361,7 +360,7 @@ def checker(ip, port, csrfname):
         check.read_bio_test()
         print '[-] Done'
     except Exception as ex:
-        return '[!] Error, Unknown Exception,' + str(ex)
+        print '[!] Error, Unknown Exception,' + str(ex)
 
 
 if __name__ == '__main__':
