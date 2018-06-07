@@ -74,5 +74,6 @@ if __name__ == "__main__":
         desc = ''.join(random.sample(string.ascii_letters * 5, 100))
         price = random.randint(10, 200)
         db.add(Commodity(name=name, desc=desc, price=price))
+    # This VIP user is only for checker, find other ways to be a VIP user!
     db.add(User(username="admin", mail="admin@admin.com",password=bcrypt.hashpw("adac74fdf8b017179959291fbf2eacef".encode('utf8'), bcrypt.gensalt()),isvip=True))
     db.commit()
