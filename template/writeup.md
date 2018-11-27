@@ -2,8 +2,8 @@
 
 ## 解题步骤
 
-在 `robots.txt` 中发现隐藏的路由 `/debugggg`，其中泄露了项目的 `cookie_secret`。构造 cookie 伪造 VIP 用户身份，发现新的“编辑个性资料”功能，尝试发现存在模板注入。
-在模板注入的时候发现存在黑名单，诸如 "{{" "include" "extend" "os" 等等字符串都会被拦截。
+在 `robots.txt` 中发现隐藏的路由 `/debugggg`，其中泄露了项目的 `cookie_secret`。构造 cookie 伪造 VIP 用户身份，发现新的“编辑个性资料”功能，尝试发现存在模板注入。  
+在模板注入的时候发现存在黑名单，诸如 "{{" "include" "extend" "os" 等等字符串都会被拦截。  
 可以通过形如 {% raw *expr* } 的 payload 达到任意命令执行的目的，通过 "o""s" 拼接绕过对 os 的拦截。
 
 最终的 payload：
